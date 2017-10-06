@@ -1,12 +1,20 @@
 ---
 title: "Shiny Weather"
-output: 
+resource_files:
+- dta/city-data_200.csv
+- dta/city-geo-coordinates.csv
+- dta/forecast-data-weather_com.csv
+- dta/forecast-data-wetter_com.csv
+- dta/forecast-data-wetter_de.csv
+- dta/forecast-data-wetterkontor_de.csv
+- dta/mapping-zip-city.csv
+runtime: shiny
+output:
   flexdashboard::flex_dashboard:
+    orientation: columns
     source: embed
     theme: simple
-    orientation: columns
     vertical_layout: fill
-runtime: shiny    
 ---
   
 ```{r global, include=FALSE}
