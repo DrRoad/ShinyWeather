@@ -12,11 +12,9 @@ runtime: shiny
 output:
   flexdashboard::flex_dashboard:
     orientation: columns
-    source: embed
     theme: simple
     vertical_layout: fill
     source_code: "https://github.com/stenzei/ShinyWeather"
-    social: "menu"   
 ---
   
 ```{r global, include=FALSE}
