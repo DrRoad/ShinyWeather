@@ -1,5 +1,5 @@
 ---
-title: "Meta Weather"
+title: "Shiny Weather"
 output: 
   flexdashboard::flex_dashboard:
     source: embed
@@ -16,8 +16,8 @@ library(leaflet)
 library(shiny)
 library(tidyverse)
 
-source("model/R6-forecast-dta.R")
-forecast_dta <- forecast_dta_R6$new("../dta")
+source("src/model/R6-forecast-dta.R")
+forecast_dta <- forecast_dta_R6$new("dta")
 ```
 
 Forecast 
@@ -29,7 +29,7 @@ Column {data-width=350}
 ### Forcast {data-heigth=500}
 
 ```{r} 
-source("modules/table-tile.R")
+source("src/modules/table-tile.R")
 tableTileUI("forecast_table")
 callModule(tableTile, "forecast_table", 
            reactive(input$city), 
@@ -41,7 +41,7 @@ callModule(tableTile, "forecast_table",
 ### Map {data-height=500}
 
 ```{r}
-source("modules/map-tile.R")
+source("src/modules/map-tile.R")
 mapTileUI("forecast_map")
 callModule(mapTile, "forecast_map", 
            reactive(input$city), 
@@ -56,7 +56,7 @@ Column {data-width=550}
 ### Chart
 
 ```{r} 
-source("modules/chart-tile.R")
+source("src/modules/chart-tile.R")
 chartTileUI("forecast_chart")
 callModule(chartTile, "forecast_chart", 
            reactive(input$city), 
@@ -100,7 +100,7 @@ Row
 ### Mean Difference of Temperature (K)
 
 ```{r}
-source("modules/quality-tile.R")
+source("src/modules/quality-tile.R")
 qualityTileUI("md_temperature_chart")
 callModule(qualityTile, "md_temperature_chart", 
            reactive(input$dta_source2),
@@ -162,7 +162,7 @@ Row
 ### History of Temperature Prediction
 
 ```{r}
-source("modules/history-tile.R")
+source("src/modules/history-tile.R")
 historyTileUI("hist_temperature_chart")
 callModule(historyTile, "hist_temperature_chart", 
            reactive(input$city3),
