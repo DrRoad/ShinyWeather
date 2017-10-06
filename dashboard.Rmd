@@ -15,7 +15,7 @@ output:
     source: embed
     theme: simple
     vertical_layout: fill
-    source_code: [ "https://github.com/stenzei/ShinyWeather", embed ]
+    source_code: "https://github.com/stenzei/ShinyWeather"
     social: "menu"   
 ---
   
