@@ -10,6 +10,8 @@ chartTile <- function(input, output, session,
                       city, dta_source, number_of_days, 
                       forecast_dta) {
   output$dta_chart <- renderUI({
+    req(city(), dta_source(), number_of_days())
+    
     plot_dta <- forecast_dta$get_forecast_chart_dta(city(), 
                                                     dta_source(),
                                                     number_of_days())
@@ -17,7 +19,7 @@ chartTile <- function(input, output, session,
     plot_dta$UPPER_RAIN_PROB[plot_dta$UPPER_RAIN_PROB > 100] <- 100
     # Take of the namespace
     ns <- session$ns
-
+    
     output$dc <- renderHighchart({
       highcharter::highchart() %>% 
         highcharter::hc_xAxis(categories = plot_dta$FORECAST_DATE) %>% 
@@ -109,11 +111,39 @@ chartTile <- function(input, output, session,
                                       events = list(
                                         legendItemClick = JS('function () {
                                                              return false;}'))),
-                                      series = list(
-                                        events = list(
-                                          legendItemClick = JS('function () {
-                                                               return false;}')))
-                                          )
+                                    series = list(
+                                      events = list(
+                                        legendItemClick = JS('function () {
+                                                             return false;}')))
+                                    )
+        # highcharter::hc_plotOptions(series = list(
+        #                               events = list(
+        #                                 show = JS('function () {
+        #                                              var i = chart.series.length - 1;
+        #                                              while (i--) {  
+        #                                                var sid = chart.series[i].options.id.concat("Error");
+        #                                                var series = chart.get(sid);
+        #                                                if (series) {
+        #                                                  series.show();
+        #                                                }
+        #                                              }
+        #                                            }'),
+        #                                 hide = JS('function () {
+        #                                              var i = chart.series.length - 1;
+        #                                              while (i--) {  
+        #                                                var sid = chart.series[i].options.id.concat("Error");
+        #                                                var series = chart.get(sid);
+        #                                                if (series) {
+        #                                                  series.show();
+        #                                                }
+        #                                              }
+        #                                            }'),
+        #                               ledgendItemClick = JS("function() {
+        #                                                        
+        #                                                          return false;
+        #                                                        
+        #                                                      }")
+        #                             )))
     })
     # Construct the actual output.
     tagList(

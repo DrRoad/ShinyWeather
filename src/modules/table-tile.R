@@ -10,6 +10,7 @@ tableTile <- function(input, output, session,
                       city, dta_source, number_of_days,
                       forecast_dta) {
   output$dta_table <- renderUI({
+    req(city(), dta_source(), number_of_days())
     table_dta <- forecast_dta$get_table_dta(city(), 
                                             dta_source(), 
                                             number_of_days())

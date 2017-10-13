@@ -1,20 +1,12 @@
 ---
-title: "Shiny Weather"
-resource_files:
-- dta/city-data_200.csv
-- dta/city-geo-coordinates.csv
-- dta/forecast-data-weather_com.csv
-- dta/forecast-data-wetter_com.csv
-- dta/forecast-data-wetter_de.csv
-- dta/forecast-data-wetterkontor_de.csv
-- dta/mapping-zip-city.csv
-runtime: shiny
-output:
+title: "Shiny Meta Weather"
+output: 
   flexdashboard::flex_dashboard:
-    orientation: columns
     theme: simple
+    orientation: columns
     vertical_layout: fill
     source_code: "https://github.com/stenzei/ShinyWeather"
+runtime: shiny    
 ---
   
 ```{r global, include=FALSE}
@@ -31,20 +23,38 @@ forecast_dta <- forecast_dta_R6$new("dta")
 Forecast 
 =========================================
 
-Column {data-width=350}
+Column {data-width=200}
 -----------------------------------------
 
-### Forcast {data-heigth=500}
+### Controls
 
 ```{r} 
-source("src/modules/table-tile.R")
-tableTileUI("forecast_table")
-callModule(tableTile, "forecast_table", 
-           reactive(input$city), 
-           reactive(input$dta_source),
-           reactive(input$number_of_days),
-           forecast_dta)
+selectizeInput("city", "Choose city:", 
+               choices = forecast_dta$get_all_cities(),
+               selected = c("Göttingen"),
+               multiple = TRUE,
+               options = list(hideSelected = TRUE,
+                              maxItems = 1))
+checkboxInput("all_cities", "Show all available cities")
+radioButtons("dta_source", "Choose data source:", 
+             choices = list("mean of all" = "mean of all",
+                            "Provider A" = "www.weather.com",
+                            "Provider B" = "www.wetter.com",
+                            "Provider C" = "www.wetter.de",
+                            "Provider D" = "www.wetterkontor.de"), 
+             selected = "mean of all")
+sliderInput("number_of_days", "Forecast horizon in days:", 
+              min = 1, max = 7, value = 5,step = 1, ticks = FALSE)
 ```
+
+Click the blue marker(s) and see weather data for that city on the selected day.
+As data may differ between forecast providers you can choose a particular source 
+or just view the mean value of the four sources. See the [About](#about) tab
+for further information.
+
+
+Column {data-width=350}
+-----------------------------------------
 
 ### Map {data-height=500}
 
@@ -55,6 +65,18 @@ callModule(mapTile, "forecast_map",
            reactive(input$city), 
            reactive(input$dta_source),
            reactive(input$all_cities),
+           forecast_dta)
+```
+
+### Forcast {data-heigth=500}
+
+```{r} 
+source("src/modules/table-tile.R")
+tableTileUI("forecast_table")
+callModule(tableTile, "forecast_table", 
+           reactive(input$city), 
+           reactive(input$dta_source),
+           reactive(input$number_of_days),
            forecast_dta)
 ```
 
@@ -73,31 +95,6 @@ callModule(chartTile, "forecast_chart",
            forecast_dta)
 ```
 
-Column {data-width=200}
------------------------------------------
-
-### Controls
-
-```{r} 
-selectizeInput("city", "Choose city:", 
-               choices = forecast_dta$get_all_cities(),
-               selected = c("Göttingen"),
-               multiple = TRUE,
-               options = list(hideSelected = TRUE,
-                              maxItems = 1))
-checkboxInput("all_cities", "Show all available cities")
-radioButtons("dta_source", "Choose data source:", 
-             choices = c("mean of all", forecast_dta$get_sources()), 
-             selected = "mean of all")
-sliderInput("number_of_days", "Forecast horizon in days:", 
-              min = 1, max = 7, value = 5,step = 1, ticks = FALSE)
-```
-
-Click the blue circles and see weather data for that city on the selected day.
-As data may differ between forecast providers you can choose a particular source 
-or just view the mean value of the four sources.
-
-
 
 Forecast quality
 =========================================
@@ -111,7 +108,6 @@ Row
 source("src/modules/quality-tile.R")
 qualityTileUI("md_temperature_chart")
 callModule(qualityTile, "md_temperature_chart", 
-           reactive(input$dta_source2),
            forecast_dta, "MEAN_DIFF_TEMPERATURE")
 ```
 
@@ -120,7 +116,6 @@ callModule(qualityTile, "md_temperature_chart",
 ```{r}
 qualityTileUI("md_rain_prob_chart")
 callModule(qualityTile, "md_rain_prob_chart", 
-           reactive(input$dta_source2),
            forecast_dta, "MEAN_DIFF_RAIN_PROB")
 ```
 
@@ -132,7 +127,6 @@ Row
 ```{r}
 qualityTileUI("md_wind_speed_chart")
 callModule(qualityTile, "md_wind_speed_chart", 
-           reactive(input$dta_source2),
            forecast_dta, "MEAN_DIFF_WIND_SPEED")
 ```
 
@@ -141,99 +135,49 @@ callModule(qualityTile, "md_wind_speed_chart",
 ```{r}
 qualityTileUI("md_rain_ammount_chart")
 callModule(qualityTile, "md_rain_ammount_chart", 
-           reactive(input$dta_source2),
            forecast_dta, "MEAN_DIFF_RAIN_AMMOUNT")
 ```
 
-Column {data-width=200}
------------------------------------------
 
-### Controls
-
-```{r} 
-checkboxGroupInput("dta_source2", "Choose data source(s):", 
-                   choices = forecast_dta$get_sources(), 
-                   selected = forecast_dta$get_sources())
-```
-
-What you see is the forcast data from the days before the day you have chosen
-for that particular day.
-
-
-
-Forecast history
+Data
 =========================================
 
-Row
--------------------------
-
-### History of Temperature Prediction
+### Data
 
 ```{r}
-source("src/modules/history-tile.R")
-historyTileUI("hist_temperature_chart")
-callModule(historyTile, "hist_temperature_chart", 
-           reactive(input$city3),
-           reactive(input$date3),
-           reactive(input$dta_source3),
-           forecast_dta, "TEMPERATURE")
+source("src/modules/data-tile.R")
+dataTileUI("all_data")
+callModule(dataTile, "all_data", forecast_dta)
 ```
 
-### History of Rain Probability Prediction
-
-```{r}
-historyTileUI("hist_rain_prob_chart")
-callModule(historyTile, "hist_rain_prob_chart", 
-           reactive(input$city3),
-           reactive(input$date3),
-           reactive(input$dta_source3),
-           forecast_dta, "RAIN_PROB")
-```
-
-Row
--------------------------
-
-### History of Wind Speed Prediction
-
-```{r}
-historyTileUI("hist_wind_speed_chart")
-callModule(historyTile, "hist_wind_speed_chart", 
-           reactive(input$city3),
-           reactive(input$date3),
-           reactive(input$dta_source3),
-           forecast_dta, "WIND_SPEED")
-```
-
-### History of Rain Ammount Predicition
-
-```{r}
-historyTileUI("hist_rain_ammount_chart")
-callModule(historyTile, "hist_rain_ammount_chart", 
-           reactive(input$city3),
-           reactive(input$date3),
-           reactive(input$dta_source3),
-           forecast_dta, "RAIN_AMMOUNT")
-```
-
-Column {data-width=200}
------------------------------------------
-
-### Controls
-
-```{r} 
-selectInput("city3", "Choose a city:", forecast_dta$get_all_cities())
-dateInput("date3", "Select a Date:", 
-          value = lubridate::today(), 
-          format = "dd.mm.yyyy")
-checkboxGroupInput("dta_source3", "Choose data source(s):", 
-                      choices = forecast_dta$get_sources(), 
-                      selected = forecast_dta$get_sources())
-```
-
-What you see is the forcast data from the days before the day you have chosen
-for that particular day.
 
 
-
-About
+About{#about}
 =========================================
+
+### A Shiny Weather dashboard 
+The app allows to compare the forcast data from different providers and to assess 
+__roughly__ its reliability. The data taken, is forcast data for around noon.
+What "around noon" means differs among the providers. Further more, the data is
+only scraped on the level of cities, therefore weather data for e.g. Berlin
+can very. Thus, the data is __not really comparable__!
+
+Nevertheless scraping could be improoved in a way that allows a reliable 
+comparrison of forecast quality.
+
+#### Data
+The weather forecast data originates from four web sites for further analyses:
+
+- [wetter.com](http://www.wetter.com), which provides weather data e.g. for 
+[Spiegel Online](http://www.spiegel.de); 
+- [wetter.de](http://www.wetter.de); 
+- [weather.com](https://weather.com), which provides (among others) data for the 
+Apple weather app;
+- [wetterkontor.de](http://www.wetterkontor.de), which provides weather data e.g. 
+for Bild.de.
+
+The data is scraped from these web sites using 
+[rvest](https://github.com/hadley/rvest) and 
+[RSelenium](https://cran.r-project.org/web/packages/RSelenium/). Scraping 
+happens on a daily basis and is not part of the dashboard.
+

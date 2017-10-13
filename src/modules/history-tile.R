@@ -16,19 +16,19 @@ historyTile <- function(input, output, session,
     output$hc <- renderHighchart({
       highcharter::highchart() %>% 
         highcharter::hc_xAxis(categories = plot_dta$SAMPLE_DATE) %>% 
-        highcharter::hc_add_series(name = "weather.com",
+        highcharter::hc_add_series(name = "Provider A",
                                    data = (plot_dta %>%
                                              dplyr::filter(SOURCE == "www.weather.com") %>% 
                                              dplyr::select(variable))[[1]]) %>%
-        highcharter::hc_add_series(name = "wetter.com",
+        highcharter::hc_add_series(name = "Provider B",
                                    data = (plot_dta %>%
                                              dplyr::filter(SOURCE == "www.wetter.com") %>% 
                                              dplyr::select(variable))[[1]]) %>%
-        highcharter::hc_add_series(name = "wetter.de",
+        highcharter::hc_add_series(name = "Provider C",
                                    data = (plot_dta %>%
                                              dplyr::filter(SOURCE == "www.wetter.de") %>% 
                                              dplyr::select(variable))[[1]]) %>%
-        highcharter::hc_add_series(name = "wetterkontor.de",
+        highcharter::hc_add_series(name = "Provider D",
                                    data = (plot_dta %>%
                                              dplyr::filter(SOURCE == "www.wetterkontor.de") %>% 
                                              dplyr::select(variable))[[1]]) %>%

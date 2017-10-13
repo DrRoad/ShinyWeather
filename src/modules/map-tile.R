@@ -9,18 +9,19 @@ mapTileUI <- function(id) {
 mapTile <- function(input, output, session, 
                     city, dta_source, all_cities, forecast_dta) {
   output$dta_map <- renderUI({
+    req(city(), dta_source())
+    
     cities <- ifelse(all_cities(),
                      list(forecast_dta$get_all_cities()),
                      city())
     map_dta <- forecast_dta$get_map_dta(cities[[1]], dta_source())
-    
+
     # Take of the namespace
     ns <- session$ns
     
     output$dm <- renderLeaflet({
       leaflet() %>%
-        addProviderTiles(providers$Esri.NatGeoWorldMap, 
-                         options = providerTileOptions(noWrap = TRUE)) %>% 
+        addTiles() %>% 
         addMarkers(lng = map_dta$LNG, 
                    lat = map_dta$LAT, 
                    label = map_dta$CITY,
