@@ -104,35 +104,16 @@ chartTile <- function(input, output, session,
                   verticalAlign = "top",
                   y = 15,
                   floating = TRUE) %>% 
-        hc_tooltip(shared = TRUE)
-        # highcharter::hc_plotOptions(series = list(
-        #                               events = list(
-        #                                 show = JS('function () {
-        #                                              var i = chart.series.length - 1;
-        #                                              while (i--) {  
-        #                                                var sid = chart.series[i].options.id.concat("Error");
-        #                                                var series = chart.get(sid);
-        #                                                if (series) {
-        #                                                  series.show();
-        #                                                }
-        #                                              }
-        #                                            }'),
-        #                                 hide = JS('function () {
-        #                                              var i = chart.series.length - 1;
-        #                                              while (i--) {  
-        #                                                var sid = chart.series[i].options.id.concat("Error");
-        #                                                var series = chart.get(sid);
-        #                                                if (series) {
-        #                                                  series.show();
-        #                                                }
-        #                                              }
-        #                                            }'),
-        #                               ledgendItemClick = JS("function() {
-        #                                                        
-        #                                                          return false;
-        #                                                        
-        #                                                      }")
-        #                             )))
+        hc_tooltip(shared = TRUE) %>% 
+        highcharter::hc_plotOptions(column = list(
+                                      events = list(
+                                        legendItemClick = JS('function () {
+                                                             return false;}'))),
+                                      series = list(
+                                        events = list(
+                                          legendItemClick = JS('function () {
+                                                               return false;}')))
+                                          )
     })
     # Construct the actual output.
     tagList(
