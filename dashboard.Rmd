@@ -1,12 +1,20 @@
 ---
 title: "Shiny Meta Weather"
-output: 
+resource_files:
+- dta/forecast-data-weather_com.csv
+- dta/forecast-data-wetter_com.csv
+- dta/forecast-data-wetter_de.csv
+- dta/forecast-data-wetterkontor_de.csv
+- dta/city-data_200.csv
+- dta/city-geo-coordinates.csv
+- dta/mapping-zip-city.csv
+runtime: shiny
+output:
   flexdashboard::flex_dashboard:
-    theme: simple
     orientation: columns
+    source_code: https://github.com/stenzei/ShinyWeather
+    theme: simple
     vertical_layout: fill
-    source_code: "https://github.com/stenzei/ShinyWeather"
-runtime: shiny    
 ---
   
 ```{r global, include=FALSE}
